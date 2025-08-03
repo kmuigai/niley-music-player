@@ -6,7 +6,7 @@ import { Input } from '@/components/ui/input';
 
 export default function TopBar() {
   return (
-    <div className="relative flex items-center justify-between p-4 bg-black">
+    <div className="relative flex items-center justify-between p-2 bg-black">
       {/* Left: Navigation Buttons */}
       <div className="flex items-center gap-2">
         <Button
