@@ -1,18 +1,19 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, createContext, useContext } from 'react';
 import { useSession } from 'next-auth/react';
+import { useRouter } from 'next/navigation';
 import { navigationItems } from '@/lib/mock-data';
 import { DashboardState, PlayerState } from '@/types/music';
 import { useSpotifyData } from '@/hooks/useSpotifyData';
 import { useSpotifyPlayer } from '@/hooks/useSpotifyPlayer';
 import { useContentFiltering } from '@/hooks/useContentFiltering';
-import TopBar from './TopBar';
-import Sidebar from './Sidebar';
-import MainContent from './MainContent';
-import PlayerBar from './PlayerBar';
+import TopBar from '@/components/dashboard/TopBar';
+import Sidebar from '@/components/dashboard/Sidebar';
+import PlayerBar from '@/components/dashboard/PlayerBar';
 import FilterToggle from '@/components/mvp/FilterToggle';
 import SafetyIndicator from '@/components/mvp/SafetyIndicator';
+import SpotifyLogin from '@/components/auth/SpotifyLogin';
 
 // Default empty state for when data is loading
 const defaultDashboardState: DashboardState = {
@@ -44,8 +45,31 @@ interface NotificationState {
   lastConnectionState: boolean;
 }
 
-export default function Dashboard() {
-  const { data: session } = useSession();
+interface AppLayoutProps {
+  children: React.ReactNode;
+}
+
+// Add PlayerContext interface and create context
+interface PlayerContextValue {
+  handleTrackPlay: (track: any) => void;
+  isPlayerReady: boolean;
+  currentTrack: any | null;
+  isPlaying: boolean;
+}
+
+const PlayerContext = createContext<PlayerContextValue | null>(null);
+
+export const usePlayer = () => {
+  const context = useContext(PlayerContext);
+  if (!context) {
+    throw new Error('usePlayer must be used within a PlayerProvider');
+  }
+  return context;
+};
+
+export default function AppLayout({ children }: AppLayoutProps) {
+  const { data: session, status } = useSession();
+  const router = useRouter();
   const { dashboardData, loading, error } = useSpotifyData();
   const spotifyPlayer = useSpotifyPlayer();
   const [dashboardState, setDashboardState] = useState<DashboardState>(defaultDashboardState);
@@ -119,60 +143,65 @@ export default function Dashboard() {
     }
   }, [dashboardData]);
 
-  // Update dashboard state with real player state
+  // Sync Spotify player state with dashboard state
   useEffect(() => {
-    if (spotifyPlayer.currentTrack) {
-      setDashboardState(prev => ({
-        ...prev,
-        playerState: {
-          ...prev.playerState,
-          currentTrack: {
-            id: spotifyPlayer.currentTrack.id || '',
-            name: spotifyPlayer.currentTrack.name || '',
-            artist: spotifyPlayer.currentTrack.artists?.map((a: any) => a.name).join(', ') || '',
-            album: spotifyPlayer.currentTrack.album?.name || '',
-            imageUrl: spotifyPlayer.currentTrack.album?.images?.[0]?.url || '',
-            duration: Math.floor(spotifyPlayer.duration / 1000),
-            currentTime: Math.floor(spotifyPlayer.position / 1000),
-            isPlaying: spotifyPlayer.isPlaying,
-            uri: spotifyPlayer.currentTrack.uri,
-          },
-          isPlaying: spotifyPlayer.isPlaying,
-          volume: spotifyPlayer.volume,
-        },
-      }));
-    }
-  }, [spotifyPlayer.currentTrack, spotifyPlayer.isPlaying, spotifyPlayer.position, spotifyPlayer.volume]);
+    setDashboardState(prev => ({
+      ...prev,
+      playerState: {
+        ...prev.playerState,
+        currentTrack: spotifyPlayer.currentTrack,
+        isPlaying: spotifyPlayer.isPlaying,
+        volume: spotifyPlayer.volume,
+      }
+    }));
+  }, [spotifyPlayer.currentTrack, spotifyPlayer.isPlaying, spotifyPlayer.volume]);
 
-  // Real player control functions using Spotify SDK
+  // Player control handlers
   const handlePlay = () => {
-    if (!spotifyPlayer.isPlaying) {
+    if (dashboardState.playerState.currentTrack) {
       spotifyPlayer.togglePlayPause();
     }
   };
 
   const handlePause = () => {
-    if (spotifyPlayer.isPlaying) {
-      spotifyPlayer.togglePlayPause();
-    }
+    spotifyPlayer.togglePlayPause();
   };
 
   const handleVolumeChange = (volume: number) => {
     spotifyPlayer.setVolume(volume);
   };
 
-  const handleSeek = (time: number) => {
-    spotifyPlayer.seek(time * 1000); // Convert seconds to milliseconds
+  const handleSeek = (position: number) => {
+    spotifyPlayer.seek(position);
   };
 
   const handleToggleShuffle = () => {
-    // TODO: Implement shuffle via Spotify Web API
-    console.log('Shuffle toggle - TODO: Implement via Spotify Web API');
+    const newShuffleState = !dashboardState.playerState.shuffle;
+    setDashboardState(prev => ({
+      ...prev,
+      playerState: {
+        ...prev.playerState,
+        shuffle: newShuffleState
+      }
+    }));
+    // Note: Spotify Web Playback SDK doesn't support shuffle control
+    console.log('Shuffle toggled:', newShuffleState);
   };
 
   const handleToggleRepeat = () => {
-    // TODO: Implement repeat via Spotify Web API
-    console.log('Repeat toggle - TODO: Implement via Spotify Web API');
+    const currentRepeat = dashboardState.playerState.repeat;
+    const newRepeat = currentRepeat === 'off' ? 'playlist' : 
+                     currentRepeat === 'playlist' ? 'track' : 'off';
+    
+    setDashboardState(prev => ({
+      ...prev,
+      playerState: {
+        ...prev.playerState,
+        repeat: newRepeat
+      }
+    }));
+    // Note: Spotify Web Playback SDK doesn't support repeat control
+    console.log('Repeat toggled:', newRepeat);
   };
 
   const handleNext = () => {
@@ -183,20 +212,9 @@ export default function Dashboard() {
     spotifyPlayer.skipToPrevious();
   };
 
-  // Function to play a specific track (used by MainContent)
   const handleTrackPlay = (track: any) => {
-    // Mark user interaction and dismiss notification
-    setNotificationState(prev => ({
-      ...prev,
-      userHasInteracted: true,
-      shouldShow: false,
-    }));
-    
-    // Store interaction in session storage
-    sessionStorage.setItem('spotify-user-interacted', 'true');
-    
     if (track.uri) {
-      // Create context from recently played tracks
+      // Create context for seamless playback
       const contextTracks = dashboardState.recentlyPlayed
         .filter(t => t.uri && t.uri !== track.uri)
         .map(t => t.uri!)
@@ -207,6 +225,20 @@ export default function Dashboard() {
       console.error('Track URI is missing:', track);
     }
   };
+
+  // Loading state
+  if (status === 'loading') {
+    return (
+      <div className="min-h-screen bg-[#2d3436] flex items-center justify-center">
+        <div className="text-white">Loading...</div>
+      </div>
+    );
+  }
+
+  // Not authenticated
+  if (!session?.user) {
+    return <SpotifyLogin />;
+  }
 
   // Show loading state
   if (loading) {
@@ -240,8 +272,6 @@ export default function Dashboard() {
     );
   }
 
-
-
   return (
     <div className="h-screen bg-black text-white flex flex-col p-2">
       {/* Top Navigation */}
@@ -251,15 +281,20 @@ export default function Dashboard() {
         {/* Left Sidebar */}
         <Sidebar 
           navigationItems={navigationItems} 
+          playlists={dashboardState.topPlaylists}
         />
 
-        {/* Main Content */}
-        <MainContent 
-          recentlyPlayed={dashboardState.recentlyPlayed}
-          topPlaylists={dashboardState.topPlaylists}
-          recommendedTracks={dashboardState.recommendedTracks}
-          onTrackPlay={handleTrackPlay}
-        />
+        {/* Main Content Area - Dynamic */}
+        <div className="flex-1 bg-[#121212] rounded-lg overflow-auto">
+          <PlayerContext.Provider value={{
+            handleTrackPlay,
+            isPlayerReady: spotifyPlayer.isReady,
+            currentTrack: spotifyPlayer.currentTrack,
+            isPlaying: spotifyPlayer.isPlaying,
+          }}>
+            {children}
+          </PlayerContext.Provider>
+        </div>
       </div>
 
       {!spotifyPlayer.isReady && !spotifyPlayer.error && session?.accessToken && (

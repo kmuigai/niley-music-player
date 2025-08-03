@@ -1,8 +1,8 @@
 'use client';
 
-import { Play } from 'lucide-react';
 import { Track, Playlist } from '@/types/music';
 import { Button } from '@/components/ui/button';
+import { Play } from 'lucide-react';
 import Image from 'next/image';
 
 interface MainContentProps {
@@ -140,7 +140,7 @@ export default function MainContent({
           <div className="grid grid-cols-4 gap-6">
             {recommendedTracks.map((track, index) => (
               <div 
-                key={track.id || index} 
+                key={track.id ? `recommended-${track.id}` : `recommended-index-${index}`} 
                 className="group cursor-pointer"
                 onClick={() => handleTrackPlay(track)}
               >

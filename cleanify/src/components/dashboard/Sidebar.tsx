@@ -1,20 +1,25 @@
 'use client';
 
 import { Home, Search, Library, Plus, Heart, Download } from 'lucide-react';
-import { NavigationItem, Playlist } from '@/types/music';
+import { NavigationItem } from '@/types/music';
 import { Button } from '@/components/ui/button';
-import { ScrollArea } from '@/components/ui/scroll-area';
 import Link from 'next/link';
+import { usePathname } from 'next/navigation';
 
 interface SidebarProps {
   navigationItems: NavigationItem[];
-  playlists: Playlist[];
 }
 
-export default function Sidebar({ navigationItems, playlists }: SidebarProps) {
-  const handlePlaylistClick = (playlist: Playlist) => {
-    console.log('Opening playlist:', playlist.name);
-    // TODO: Navigate to playlist detail view
+export default function Sidebar({ navigationItems }: SidebarProps) {
+  const pathname = usePathname();
+
+  const getNavButtonClass = (href: string) => {
+    const isActive = pathname === href;
+    return `w-full justify-start hover:text-white hover:bg-[#a29bfe]/15 ${
+      isActive 
+        ? 'text-white bg-[#a29bfe]/20' 
+        : 'text-gray-400'
+    }`;
   };
 
   return (
@@ -24,7 +29,7 @@ export default function Sidebar({ navigationItems, playlists }: SidebarProps) {
         <Link href="/">
           <Button 
             variant="ghost" 
-            className="w-full justify-start text-white hover:text-white hover:bg-[#a29bfe]/15"
+            className={getNavButtonClass('/')}
           >
             <Home className="h-5 w-5 mr-3" />
             Home
@@ -33,19 +38,21 @@ export default function Sidebar({ navigationItems, playlists }: SidebarProps) {
         <Link href="/search">
           <Button
             variant="ghost"
-            className="w-full justify-start text-gray-400 hover:text-white hover:bg-[#a29bfe]/15"
+            className={getNavButtonClass('/search')}
           >
             <Search className="h-5 w-5 mr-3" />
             Search
           </Button>
         </Link>
-        <Button
-          variant="ghost"
-          className="w-full justify-start text-gray-400 hover:text-white hover:bg-[#a29bfe]/15"
-        >
-          <Library className="h-5 w-5 mr-3" />
-          Your Library
-        </Button>
+        <Link href="/library">
+          <Button
+            variant="ghost"
+            className={getNavButtonClass('/library')}
+          >
+            <Library className="h-5 w-5 mr-3" />
+            Your Library
+          </Button>
+        </Link>
       </nav>
 
       {/* Secondary Actions */}
@@ -57,13 +64,15 @@ export default function Sidebar({ navigationItems, playlists }: SidebarProps) {
           <Plus className="h-5 w-5 mr-3" />
           Create Playlist
         </Button>
-        <Button
-          variant="ghost"
-          className="w-full justify-start text-gray-400 hover:text-white hover:bg-[#a29bfe]/15"
-        >
-          <Heart className="h-5 w-5 mr-3" />
-          Liked Songs
-        </Button>
+        <Link href="/liked-songs">
+          <Button
+            variant="ghost"
+            className={getNavButtonClass('/liked-songs')}
+          >
+            <Heart className="h-5 w-5 mr-3" />
+            Liked Songs
+          </Button>
+        </Link>
         <Button
           variant="ghost"
           className="w-full justify-start text-gray-400 hover:text-white hover:bg-[#a29bfe]/15"
@@ -71,32 +80,6 @@ export default function Sidebar({ navigationItems, playlists }: SidebarProps) {
           <Download className="h-5 w-5 mr-3" />
           Your Episodes
         </Button>
-      </div>
-
-      {/* Playlist Section */}
-      <div className="border-t border-gray-800 pt-4 flex-1">
-        <ScrollArea className="h-32">
-          <div className="space-y-2">
-            {playlists.map((playlist, index) => (
-              <div 
-                key={playlist.id ? `sidebar-playlist-${playlist.id}` : `sidebar-playlist-index-${index}`} 
-                className="text-sm text-gray-400 hover:text-white cursor-pointer transition-colors py-1 px-2 rounded hover:bg-[#a29bfe]/15"
-                onClick={() => handlePlaylistClick(playlist)}
-                title={playlist.description || playlist.name}
-              >
-                <div className="truncate">{playlist.name}</div>
-                {playlist.isOwned && (
-                  <div className="text-xs text-gray-500">by you • {playlist.trackCount} songs</div>
-                )}
-              </div>
-            ))}
-            {playlists.length === 0 && (
-              <div className="text-sm text-gray-500 italic">
-                No playlists available
-              </div>
-            )}
-          </div>
-        </ScrollArea>
       </div>
     </div>
   );

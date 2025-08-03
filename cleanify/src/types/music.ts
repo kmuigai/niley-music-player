@@ -10,6 +10,8 @@ export interface Track {
   isLiked?: boolean;
   explicit?: boolean;
   uri?: string; // Spotify URI
+  addedAt?: string; // Date when track was added to liked songs
+  previewUrl?: string; // Spotify preview URL
 }
 
 export interface Album {
@@ -32,6 +34,7 @@ export interface Playlist {
   isOwned?: boolean;
   isPublic?: boolean;
   uri?: string; // Spotify URI
+  owner?: string; // Display name of playlist owner
 }
 
 export interface Artist {

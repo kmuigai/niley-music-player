@@ -1,10 +1,11 @@
 import { useState, useEffect, useRef } from 'react';
 import { useSession } from 'next-auth/react';
+import { Track } from '@/types/music';
 
 interface SpotifyPlayerState {
   isReady: boolean;
   deviceId: string | null;
-  currentTrack: any | null;
+  currentTrack: Track | null;
   isPlaying: boolean;
   position: number;
   duration: number;
@@ -35,6 +36,29 @@ export function useSpotifyPlayer() {
   });
   
   const playerRef = useRef<any>(null);
+
+  // Transform Spotify SDK track data to our Track interface
+  const transformSpotifyTrack = (spotifyTrack: any): Track | null => {
+    if (!spotifyTrack) return null;
+    
+    console.log('🎵 Transforming Spotify track:', {
+      name: spotifyTrack.name,
+      imageUrl: spotifyTrack.album?.images?.[0]?.url,
+      albumImages: spotifyTrack.album?.images,
+    });
+    
+    return {
+      id: spotifyTrack.id,
+      name: spotifyTrack.name,
+      artist: spotifyTrack.artists?.[0]?.name || 'Unknown Artist',
+      album: spotifyTrack.album?.name || 'Unknown Album',
+      imageUrl: spotifyTrack.album?.images?.[0]?.url || '/placeholder-track.jpg',
+      duration: Math.floor((spotifyTrack.duration_ms || 0) / 1000), // Convert to seconds
+      uri: spotifyTrack.uri,
+      explicit: spotifyTrack.explicit || false,
+      previewUrl: spotifyTrack.preview_url,
+    };
+  };
 
   // Real-time position polling for smooth progress updates
   useEffect(() => {
@@ -93,9 +117,11 @@ export function useSpotifyPlayer() {
       player.addListener('player_state_changed', (state: any) => {
         if (!state) return;
 
+        const transformedTrack = transformSpotifyTrack(state.track_window.current_track);
+        
         setPlayerState(prev => ({
           ...prev,
-          currentTrack: state.track_window.current_track,
+          currentTrack: transformedTrack,
           isPlaying: !state.paused,
           position: state.position,
           duration: state.duration,
@@ -148,13 +174,29 @@ export function useSpotifyPlayer() {
     };
   }, [session?.accessToken]);
 
-  const playTrack = async (spotifyUri: string, contextTracks?: string[]) => {
-    if (!session?.accessToken || !playerState.deviceId) {
-      setPlayerState(prev => ({ ...prev, error: 'Player not ready or no device ID' }));
+  const playTrack = async (spotifyUri: string, contextTracks?: string[], retryCount = 0) => {
+    if (!session?.accessToken) {
+      setPlayerState(prev => ({ ...prev, error: 'No access token available' }));
       return;
     }
 
+    // If player isn't ready yet, wait a bit and retry (up to 3 times)
+    if (!playerState.deviceId || !playerState.isReady) {
+      if (retryCount < 3) {
+        console.log(`Player not ready, retrying in ${(retryCount + 1) * 1000}ms...`);
+        setTimeout(() => {
+          playTrack(spotifyUri, contextTracks, retryCount + 1);
+        }, (retryCount + 1) * 1000);
+        return;
+      } else {
+        setPlayerState(prev => ({ ...prev, error: 'Player not ready after retries' }));
+        return;
+      }
+    }
+
     try {
+      console.log(`🎵 Starting playback for: ${spotifyUri}`);
+      
       // Step 1: Transfer playback to our device first
       const transferResponse = await fetch('https://api.spotify.com/v1/me/player', {
         method: 'PUT',
@@ -169,14 +211,14 @@ export function useSpotifyPlayer() {
       });
 
       // Wait a moment for transfer to complete
-      await new Promise(resolve => setTimeout(resolve, 500));
+      await new Promise(resolve => setTimeout(resolve, 750));
 
       // Step 2: Create a queue with the requested track and some context
       const urisToPlay = contextTracks && contextTracks.length > 0 
         ? [spotifyUri, ...contextTracks.filter(uri => uri !== spotifyUri).slice(0, 19)] // Max 20 tracks total
         : [spotifyUri]; // Single track fallback
 
-      console.log(`Playing track with ${urisToPlay.length} tracks in queue`);
+      console.log(`🎵 Playing track with ${urisToPlay.length} tracks in queue`);
 
       // Step 3: Start playback with the queue
       const playResponse = await fetch(`https://api.spotify.com/v1/me/player/play?device_id=${playerState.deviceId}`, {
@@ -193,7 +235,11 @@ export function useSpotifyPlayer() {
         throw new Error(errorData.error?.message || 'Failed to play track');
       }
 
-      console.log('Successfully started playback!');
+      console.log('🎵 Successfully started playback!');
+      
+      // Clear any previous errors
+      setPlayerState(prev => ({ ...prev, error: null }));
+      
     } catch (error) {
       console.error('Error playing track:', error);
       setPlayerState(prev => ({ 

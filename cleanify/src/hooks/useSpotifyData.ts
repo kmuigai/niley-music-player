@@ -66,16 +66,19 @@ export function useSpotifyData() {
         })).slice(0, 4);
 
         // Transform user playlists
-        const topPlaylists: Playlist[] = userPlaylistsData.items.map((playlist: any) => ({
-          id: playlist.id,
-          name: playlist.name,
-          description: playlist.description || '',
-          imageUrl: playlist.images?.[0]?.url || '/placeholder-playlist.jpg',
-          trackCount: playlist.tracks.total,
-          isOwned: playlist.owner.id === userProfile.id,
-          isPublic: playlist.public,
-          uri: playlist.uri,
-        })).slice(0, 3);
+        const playlistsToExclude = ['RACE TIME', 'IG', 'Instagram Reels - Top Trending'];
+        const topPlaylists: Playlist[] = userPlaylistsData.items
+          .filter((playlist: any) => !playlistsToExclude.includes(playlist.name))
+          .map((playlist: any) => ({
+            id: playlist.id,
+            name: playlist.name,
+            description: playlist.description || '',
+            imageUrl: playlist.images?.[0]?.url || '/placeholder-playlist.jpg',
+            trackCount: playlist.tracks.total,
+            isOwned: playlist.owner.id === userProfile.id,
+            isPublic: playlist.public,
+            uri: playlist.uri,
+          })).slice(0, 3);
 
         // Transform saved tracks (liked songs)
         const likedSongs: Track[] = savedTracksData.items.map((item: any) => ({

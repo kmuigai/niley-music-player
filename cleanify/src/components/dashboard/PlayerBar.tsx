@@ -89,11 +89,14 @@ export default function PlayerBar({
       {/* Song Info */}
       <div className="flex items-center gap-4 w-1/4">
         <Image
-          src={currentTrack.imageUrl || "/placeholder.svg?height=56&width=56"}
+          src={currentTrack.imageUrl || "/placeholder-track.jpg"}
           alt={`${currentTrack.name} album art`}
           width={56}
           height={56}
           className="rounded"
+          onError={(e) => {
+            (e.target as HTMLImageElement).src = '/placeholder-track.jpg';
+          }}
         />
         <div>
           <h4 className="text-white text-sm font-medium">{currentTrack.name}</h4>

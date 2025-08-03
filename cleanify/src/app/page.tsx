@@ -1,11 +1,14 @@
 'use client';
 
 import { useSession } from 'next-auth/react';
-import Dashboard from '@/components/dashboard/Dashboard';
+import AppLayout from '@/components/layout/AppLayout';
+import HomeContent from '@/components/dashboard/HomeContent';
 import SpotifyLogin from '@/components/auth/SpotifyLogin';
+import { useSpotifyData } from '@/hooks/useSpotifyData';
 
 export default function Home() {
   const { data: session, status } = useSession();
+  const { dashboardData, loading, error } = useSpotifyData();
 
   if (status === 'loading') {
     return (
@@ -19,5 +22,13 @@ export default function Home() {
     return <SpotifyLogin />;
   }
 
-  return <Dashboard />;
+  return (
+    <AppLayout>
+      <HomeContent 
+        recentlyPlayed={dashboardData?.recentlyPlayed || []}
+        topPlaylists={dashboardData?.topPlaylists || []}
+        recommendedTracks={dashboardData?.recommendedTracks || []}
+      />
+    </AppLayout>
+  );
 }
