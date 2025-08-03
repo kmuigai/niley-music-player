@@ -1,28 +1,14 @@
 'use client';
 
-import { ChevronLeft, ChevronRight, Search, Shield, User, ChevronDown } from 'lucide-react';
+import { Search, Shield, User, ChevronDown } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 
 export default function TopBar() {
   return (
     <div className="relative flex items-center justify-between p-2 bg-black">
-      {/* Left: Navigation Buttons */}
+      {/* Left: Empty space for layout */}
       <div className="flex items-center gap-2">
-        <Button
-          variant="ghost"
-          size="icon"
-          className="rounded-full bg-black border border-gray-700 hover:bg-[#a29bfe]/15 hover:border-[#a29bfe]/30"
-        >
-          <ChevronLeft className="h-4 w-4" />
-        </Button>
-        <Button
-          variant="ghost"
-          size="icon"
-          className="rounded-full bg-black border border-gray-700 hover:bg-[#a29bfe]/15 hover:border-[#a29bfe]/30"
-        >
-          <ChevronRight className="h-4 w-4" />
-        </Button>
       </div>
       
       {/* Center: Absolutely Positioned Search Bar */}

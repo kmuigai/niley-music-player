@@ -19,11 +19,6 @@ export default function Sidebar({ navigationItems, playlists }: SidebarProps) {
 
   return (
     <div className="w-64 bg-[#121212] rounded-lg p-6 flex flex-col h-full">
-      {/* Brand Logo */}
-      <div className="mb-8">
-        <h1 className="text-2xl font-bold text-[#6c5ce7]">Niley</h1>
-      </div>
-
       {/* Main Navigation */}
       <nav className="space-y-4 mb-8">
         <Link href="/">
