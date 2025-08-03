@@ -78,14 +78,14 @@ export default function PlayerBar({
 
   if (!currentTrack) {
     return (
-      <div className="bg-[#2d3436] border-t border-gray-800 p-4 flex items-center justify-center text-gray-400">
+      <div className="bg-[#181818] rounded-lg p-4 flex items-center justify-center text-gray-400">
         <span>No track selected</span>
       </div>
     );
   }
 
   return (
-    <div className="bg-[#2d3436] border-t border-gray-800 p-4 flex items-center justify-between">
+    <div className="bg-[#181818] rounded-lg p-4 flex items-center justify-between">
       {/* Song Info */}
       <div className="flex items-center gap-4 w-1/4">
         <Image

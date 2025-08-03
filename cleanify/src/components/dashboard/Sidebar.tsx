@@ -18,7 +18,7 @@ export default function Sidebar({ navigationItems, playlists }: SidebarProps) {
   };
 
   return (
-    <div className="w-64 bg-[#2d3436] p-6 flex flex-col h-full">
+    <div className="w-64 bg-[#121212] rounded-lg p-6 flex flex-col h-full">
       {/* Brand Logo */}
       <div className="mb-8">
         <h1 className="text-2xl font-bold text-[#6c5ce7]">Niley</h1>
@@ -84,7 +84,7 @@ export default function Sidebar({ navigationItems, playlists }: SidebarProps) {
           <div className="space-y-2">
             {playlists.map((playlist, index) => (
               <div 
-                key={playlist.id || index} 
+                key={playlist.id ? `sidebar-playlist-${playlist.id}` : `sidebar-playlist-index-${index}`} 
                 className="text-sm text-gray-400 hover:text-white cursor-pointer transition-colors py-1 px-2 rounded hover:bg-[#a29bfe]/15"
                 onClick={() => handlePlaylistClick(playlist)}
                 title={playlist.description || playlist.name}

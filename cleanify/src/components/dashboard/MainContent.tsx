@@ -41,7 +41,7 @@ export default function MainContent({
   };
 
   return (
-    <div className="flex-1 bg-gradient-to-b from-[#a29bfe]/20 to-[#2d3436] overflow-auto">
+    <div className="flex-1 bg-gradient-to-b from-[#a29bfe]/20 to-[#121212] rounded-lg overflow-auto">
       <div className="p-8">
         {/* Dynamic Greeting */}
         <h2 className="text-3xl font-bold mb-8">{getGreeting()}</h2>
@@ -50,7 +50,7 @@ export default function MainContent({
         <div className="grid grid-cols-3 gap-4 mb-12">
           {recentlyPlayed.slice(0, 6).map((track, index) => (
             <div
-              key={track.id || index}
+              key={track.id ? `track-${track.id}` : `track-index-${index}`}
               className="bg-[#a29bfe]/10 rounded-md flex items-center hover:bg-[#a29bfe]/20 transition-colors cursor-pointer group"
               onClick={() => handleTrackPlay(track)}
             >
@@ -98,7 +98,7 @@ export default function MainContent({
           <div className="grid grid-cols-5 gap-6">
             {topPlaylists.map((playlist, index) => (
               <div 
-                key={playlist.id || index} 
+                key={playlist.id ? `playlist-${playlist.id}` : `playlist-index-${index}`} 
                 className="group cursor-pointer"
                 onClick={() => handlePlaylistClick(playlist)}
               >

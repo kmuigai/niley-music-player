@@ -243,11 +243,11 @@ export default function Dashboard() {
 
 
   return (
-    <div className="h-screen bg-[#2d3436] text-white flex flex-col">
+    <div className="h-screen bg-black text-white flex flex-col p-2">
       {/* Top Navigation */}
       <TopBar />
 
-      <div className="flex flex-1 overflow-hidden">
+      <div className="flex flex-1 gap-2 overflow-hidden mt-2">
         {/* Left Sidebar */}
         <Sidebar 
           navigationItems={navigationItems} 
@@ -263,18 +263,14 @@ export default function Dashboard() {
         />
       </div>
 
-
-
       {!spotifyPlayer.isReady && !spotifyPlayer.error && session?.accessToken && (
-        <div className="bg-yellow-600 text-white p-2 text-center text-sm">
+        <div className="bg-yellow-600 text-white p-2 text-center text-sm rounded-lg mx-2 my-1">
           <strong>Connecting to Spotify...</strong> Initializing Web Player (requires Premium)...
         </div>
       )}
 
-
-
       {/* Family Safe Mode Controls */}
-      <div className="bg-[#1a1a1a] border-t border-gray-800 p-3 flex items-center justify-between">
+      <div className="bg-[#1a1a1a] border border-gray-800 rounded-lg m-2 p-3 flex items-center justify-between">
         <div className="flex items-center gap-4">
           <FilterToggle
             isEnabled={contentFiltering.isEnabled}
@@ -293,21 +289,23 @@ export default function Dashboard() {
       </div>
 
       {/* Currently Playing Bar */}
-      <PlayerBar
-        currentTrack={dashboardState.playerState.currentTrack}
-        isPlaying={dashboardState.playerState.isPlaying}
-        volume={dashboardState.playerState.volume}
-        shuffle={dashboardState.playerState.shuffle}
-        repeat={dashboardState.playerState.repeat}
-        onPlay={handlePlay}
-        onPause={handlePause}
-        onVolumeChange={handleVolumeChange}
-        onSeek={handleSeek}
-        onToggleShuffle={handleToggleShuffle}
-        onToggleRepeat={handleToggleRepeat}
-        onNext={handleNext}
-        onPrevious={handlePrevious}
-      />
+      <div className="mx-2 mb-2">
+        <PlayerBar
+          currentTrack={dashboardState.playerState.currentTrack}
+          isPlaying={dashboardState.playerState.isPlaying}
+          volume={dashboardState.playerState.volume}
+          shuffle={dashboardState.playerState.shuffle}
+          repeat={dashboardState.playerState.repeat}
+          onPlay={handlePlay}
+          onPause={handlePause}
+          onVolumeChange={handleVolumeChange}
+          onSeek={handleSeek}
+          onToggleShuffle={handleToggleShuffle}
+          onToggleRepeat={handleToggleRepeat}
+          onNext={handleNext}
+          onPrevious={handlePrevious}
+        />
+      </div>
     </div>
   );
 } 

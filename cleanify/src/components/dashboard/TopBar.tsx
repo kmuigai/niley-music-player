@@ -6,20 +6,20 @@ import { Input } from '@/components/ui/input';
 
 export default function TopBar() {
   return (
-    <div className="relative flex items-center justify-between p-4 bg-[#2d3436]">
+    <div className="relative flex items-center justify-between p-4 bg-black">
       {/* Left: Navigation Buttons */}
       <div className="flex items-center gap-2">
         <Button
           variant="ghost"
           size="icon"
-          className="rounded-full bg-[#2d3436] border border-gray-700 hover:bg-[#a29bfe]/15 hover:border-[#a29bfe]/30"
+          className="rounded-full bg-black border border-gray-700 hover:bg-[#a29bfe]/15 hover:border-[#a29bfe]/30"
         >
           <ChevronLeft className="h-4 w-4" />
         </Button>
         <Button
           variant="ghost"
           size="icon"
-          className="rounded-full bg-[#2d3436] border border-gray-700 hover:bg-[#a29bfe]/15 hover:border-[#a29bfe]/30"
+          className="rounded-full bg-black border border-gray-700 hover:bg-[#a29bfe]/15 hover:border-[#a29bfe]/30"
         >
           <ChevronRight className="h-4 w-4" />
         </Button>
@@ -42,7 +42,7 @@ export default function TopBar() {
         <Button
           variant="ghost"
           size="sm"
-          className="rounded-full bg-[#2d3436] border border-gray-700 hover:bg-[#a29bfe]/15 hover:border-[#a29bfe]/30"
+          className="rounded-full bg-black border border-gray-700 hover:bg-[#a29bfe]/15 hover:border-[#a29bfe]/30"
         >
           <User className="h-4 w-4 mr-2" />
           Profile
