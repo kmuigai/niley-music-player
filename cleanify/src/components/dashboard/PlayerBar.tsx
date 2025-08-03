@@ -49,31 +49,15 @@ export default function PlayerBar({
   onNext,
   onPrevious,
 }: PlayerBarProps) {
-  const [currentTime, setCurrentTime] = useState(45);
-  const duration = 180;
+  // Use real track data instead of mock values
+  const currentTime = currentTrack?.currentTime || 0;
+  const duration = currentTrack?.duration || 0;
 
   const formatTime = (seconds: number) => {
     const mins = Math.floor(seconds / 60);
     const secs = seconds % 60;
     return `${mins}:${secs.toString().padStart(2, "0")}`;
   };
-
-  // Mock progress update when playing
-  useEffect(() => {
-    if (isPlaying) {
-      const interval = setInterval(() => {
-        setCurrentTime(prev => {
-          const newTime = prev + 1;
-          if (newTime >= duration) {
-            return 0; // Loop back to start
-          }
-          return newTime;
-        });
-      }, 1000);
-
-      return () => clearInterval(interval);
-    }
-  }, [isPlaying, duration]);
 
   const handlePlayPause = () => {
     if (isPlaying) {
@@ -85,7 +69,6 @@ export default function PlayerBar({
 
   const handleProgressChange = (value: number[]) => {
     const newTime = value[0];
-    setCurrentTime(newTime);
     onSeek(newTime);
   };
 
@@ -106,8 +89,8 @@ export default function PlayerBar({
       {/* Song Info */}
       <div className="flex items-center gap-4 w-1/4">
         <Image
-          src="/placeholder.svg?height=56&width=56"
-          alt="Current song"
+          src={currentTrack.imageUrl || "/placeholder.svg?height=56&width=56"}
+          alt={`${currentTrack.name} album art`}
           width={56}
           height={56}
           className="rounded"

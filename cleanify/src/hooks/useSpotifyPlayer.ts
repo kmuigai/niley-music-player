@@ -36,6 +36,30 @@ export function useSpotifyPlayer() {
   
   const playerRef = useRef<any>(null);
 
+  // Real-time position polling for smooth progress updates
+  useEffect(() => {
+    if (!playerRef.current || !playerState.isPlaying) return;
+
+    const pollPosition = async () => {
+      try {
+        const state = await playerRef.current.getCurrentState();
+        if (state && !state.paused) {
+          setPlayerState(prev => ({
+            ...prev,
+            position: state.position,
+            isPlaying: !state.paused,
+          }));
+        }
+      } catch (error) {
+        console.error('Error polling position:', error);
+      }
+    };
+
+    // Poll position every second when playing
+    const interval = setInterval(pollPosition, 1000);
+    return () => clearInterval(interval);
+  }, [playerState.isPlaying]);
+
   useEffect(() => {
     if (!session?.accessToken) return;
 

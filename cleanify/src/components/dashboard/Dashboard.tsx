@@ -263,13 +263,7 @@ export default function Dashboard() {
         />
       </div>
 
-      {/* Spotify Player Status */}
-      {spotifyPlayer.error && (
-        <div className="bg-red-600 text-white p-2 text-center text-sm">
-          <strong>Spotify Player Error:</strong> {spotifyPlayer.error}
-          {!spotifyPlayer.isReady && " (Make sure you have Spotify Premium and try refreshing)"}
-        </div>
-      )}
+
 
       {!spotifyPlayer.isReady && !spotifyPlayer.error && session?.accessToken && (
         <div className="bg-yellow-600 text-white p-2 text-center text-sm">
