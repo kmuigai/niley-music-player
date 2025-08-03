@@ -1,0 +1,138 @@
+@import "tailwindcss";
+@import "tw-animate-css";
+
+@custom-variant dark (&:is(.dark *));
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --font-sans: var(--font-geist-sans);
+  --font-mono: var(--font-geist-mono);
+  --color-sidebar-ring: var(--sidebar-ring);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar: var(--sidebar);
+  --color-chart-5: var(--chart-5);
+  --color-chart-4: var(--chart-4);
+  --color-chart-3: var(--chart-3);
+  --color-chart-2: var(--chart-2);
+  --color-chart-1: var(--chart-1);
+  --color-ring: var(--ring);
+  --color-input: var(--input);
+  --color-border: var(--border);
+  --color-destructive: var(--destructive);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-accent: var(--accent);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-muted: var(--muted);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-secondary: var(--secondary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-primary: var(--primary);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-popover: var(--popover);
+  --color-card-foreground: var(--card-foreground);
+  --color-card: var(--card);
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+  
+  /* Niley Purple Theme Colors */
+  --color-niley-dark: var(--niley-dark);
+  --color-niley-primary: var(--niley-primary);
+  --color-niley-secondary: var(--niley-secondary);
+  --color-niley-surface: var(--niley-surface);
+  --color-niley-surface-hover: var(--niley-surface-hover);
+}
+
+:root {
+  --radius: 0.625rem;
+  
+  /* Niley Purple Theme */
+  --niley-dark: #2d3436;
+  --niley-primary: #6c5ce7;
+  --niley-secondary: #a29bfe;
+  --niley-surface: rgba(162, 155, 254, 0.1);
+  --niley-surface-hover: rgba(162, 155, 254, 0.2);
+  
+  /* Updated theme to use Niley colors */
+  --background: var(--niley-dark);
+  --foreground: #ffffff;
+  --card: var(--niley-dark);
+  --card-foreground: #ffffff;
+  --popover: var(--niley-dark);
+  --popover-foreground: #ffffff;
+  --primary: var(--niley-primary);
+  --primary-foreground: #000000;
+  --secondary: var(--niley-surface);
+  --secondary-foreground: #ffffff;
+  --muted: var(--niley-surface);
+  --muted-foreground: #9ca3af;
+  --accent: var(--niley-secondary);
+  --accent-foreground: #000000;
+  --destructive: #f87171;
+  --border: #374151;
+  --input: #ffffff;
+  --ring: var(--niley-primary);
+  --chart-1: var(--niley-primary);
+  --chart-2: #60a5fa;
+  --chart-3: #a78bfa;
+  --chart-4: #34d399;
+  --chart-5: #fbbf24;
+  --sidebar: var(--niley-dark);
+  --sidebar-foreground: #ffffff;
+  --sidebar-primary: var(--niley-primary);
+  --sidebar-primary-foreground: #000000;
+  --sidebar-accent: var(--niley-surface);
+  --sidebar-accent-foreground: #ffffff;
+  --sidebar-border: #374151;
+  --sidebar-ring: var(--niley-primary);
+}
+
+.dark {
+  --background: var(--niley-dark);
+  --foreground: #ffffff;
+  --card: var(--niley-dark);
+  --card-foreground: #ffffff;
+  --popover: var(--niley-dark);
+  --popover-foreground: #ffffff;
+  --primary: var(--niley-primary);
+  --primary-foreground: #000000;
+  --secondary: var(--niley-surface);
+  --secondary-foreground: #ffffff;
+  --muted: var(--niley-surface);
+  --muted-foreground: #9ca3af;
+  --accent: var(--niley-secondary);
+  --accent-foreground: #000000;
+  --destructive: #ef4444;
+  --border: #374151;
+  --input: #ffffff;
+  --ring: var(--niley-primary);
+  --chart-1: var(--niley-primary);
+  --chart-2: #60a5fa;
+  --chart-3: #a78bfa;
+  --chart-4: #34d399;
+  --chart-5: #fbbf24;
+  --sidebar: var(--niley-dark);
+  --sidebar-foreground: #ffffff;
+  --sidebar-primary: var(--niley-primary);
+  --sidebar-primary-foreground: #000000;
+  --sidebar-accent: var(--niley-surface);
+  --sidebar-accent-foreground: #ffffff;
+  --sidebar-border: #374151;
+  --sidebar-ring: var(--niley-primary);
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+  body {
+    @apply bg-background text-foreground;
+  }
+}
